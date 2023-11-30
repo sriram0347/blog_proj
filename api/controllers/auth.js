@@ -51,7 +51,7 @@ const login = async (req, res) => {
       }
   
       // Generate token
-      const token = jwt.sign({ id: user._id }, "jwtkey"); // Use your secret key
+      const token = jwt.sign({ id: user._id }, "asGafgdaf12d"); // Use your secret key
   
       // Destructure to omit password from the response
       const { password, ...otherDetails } = user._doc;
@@ -59,7 +59,9 @@ const login = async (req, res) => {
       // Send response with token in a cookie
       res.cookie("access_token", token, {
         httpOnly: true,
-      }).status(200).json(otherDetails);
+        }).cookie("user_id", user._id.toString(), {
+        httpOnly: true
+        }).status(200).json(otherDetails);
   
     } catch (err) {
       console.log(err);

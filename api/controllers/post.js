@@ -18,6 +18,22 @@ const getPosts = async (req, res) => {
     res.status(500).send(err);
   }
 };
+const getPostsByUser = async (req, res) => {
+  try {
+    const userId = req.cookies.user_id; // Assuming the user ID is stored in a cookie named 'id'
+
+    if (!userId) {
+      return res.status(400).json("User ID not found in cookies");
+    }
+
+    // Find posts by user ID
+    const posts = await Post.find({ user_id: userId });
+
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
 
 const getPost = async (req, res) => {
   try {
@@ -60,24 +76,25 @@ const getPost = async (req, res) => {
 
 const addPost = async (req, res) => {
     const token = req.cookies.access_token;
+    console.log(token);
     if (!token) return res.status(401).json("Not authenticated!");
   
     try {
-      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
-  
+      const userInfo = jwt.verify(token, "asGafgdaf12d"); // Replace "jwtkey" with your actual JWT secret
+      console.log(userInfo);  
       const newPost = new Post({
         title: req.body.title,
         desc: req.body.desc,
-        img: req.body.img,
+        
         cat: req.body.cat,
         date: req.body.date,
-        userId: userInfo.id, // Assuming the decoded token contains the user ID
+        user_id: userInfo.id, // Assuming the decoded token contains the user ID
       });
   
       await newPost.save();
       return res.json("Post has been created.");
     } catch (err) {
-      console.log(err);
+      
       if (err.name === "JsonWebTokenError") {
         return res.status(403).json("Token is not valid!");
       }
@@ -140,4 +157,4 @@ const updatePost = async (req, res) => {
     }
   };
 
-  module.exports = { getPosts, getPost,addPost,deletePost,updatePost };
+  module.exports = { getPosts, getPost,addPost,deletePost,updatePost,getPostsByUser };
