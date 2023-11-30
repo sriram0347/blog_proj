@@ -1,89 +1,143 @@
-import { db } from "../db.js";
-import jwt from "jsonwebtoken";
+const Post = require( '../models/posts'); // Import Post model
+const User = require( '../models/User'); // Import User model
+const jwt= require("jsonwebtoken");
 
-export const getPosts = (req, res) => {
-  const q = req.query.cat
-    ? "SELECT * FROM posts WHERE cat=?"
-    : "SELECT * FROM posts";
+const getPosts = async (req, res) => {
+  try {
+    let posts;
+    if (req.query.cat) {
+      // Find posts with the specified category
+      posts = await Post.find({ cat: req.query.cat });
+    } else {
+      // Find all posts
+      posts = await Post.find({});
+    }
 
-  db.query(q, [req.query.cat], (err, data) => {
-    if (err) return res.status(500).send(err);
-
-    return res.status(200).json(data);
-  });
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-export const getPost = (req, res) => {
-  const q =
-    "SELECT p.id, `username`, `title`, `desc`, p.img, u.img AS userImg, `cat`,`date` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ? ";
+const getPost = async (req, res) => {
+  try {
+    const postId = req.params.id;
 
-  db.query(q, [req.params.id], (err, data) => {
-    if (err) return res.status(500).json(err);
+    const post = await Post.aggregate([
+      { $match: { _id: postId } },
+      {
+        $lookup: {
+          from: User.collection.name,
+          localField: 'userId', // Field in the Post model
+          foreignField: '_id', // Field in the User model
+          as: 'user'
+        }
+      },
+      { $unwind: '$user' },
+      {
+        $project: {
+          id: '$_id',
+          username: '$user.username',
+          title: 1,
+          desc: 1,
+          img: 1,
+          userImg: '$user.img',
+          cat: 1,
+          date: 1
+        }
+      }
+    ]);
 
-    return res.status(200).json(data[0]);
-  });
+    if (!post) {
+      return res.status(404).json('Post not found');
+    }
+
+    res.status(200).json(post[0]);
+  } catch (err) {
+    res.status(500).json(err);
+  }
 };
 
-export const addPost = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
-
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const q =
-      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`,`uid`) VALUES (?)";
-
-    const values = [
-      req.body.title,
-      req.body.desc,
-      req.body.img,
-      req.body.cat,
-      req.body.date,
-      userInfo.id,
-    ];
-
-    db.query(q, [values], (err, data) => {
-      if (err) return res.status(500).json(err);
+const addPost = async (req, res) => {
+    const token = req.cookies.access_token;
+    if (!token) return res.status(401).json("Not authenticated!");
+  
+    try {
+      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
+  
+      const newPost = new Post({
+        title: req.body.title,
+        desc: req.body.desc,
+        img: req.body.img,
+        cat: req.body.cat,
+        date: req.body.date,
+        userId: userInfo.id, // Assuming the decoded token contains the user ID
+      });
+  
+      await newPost.save();
       return res.json("Post has been created.");
-    });
-  });
-};
+    } catch (err) {
+      console.log(err);
+      if (err.name === "JsonWebTokenError") {
+        return res.status(403).json("Token is not valid!");
+      }
+      return res.status(500).json(err);
+    }
+  };
 
-export const deletePost = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
-
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const postId = req.params.id;
-    const q = "DELETE FROM posts WHERE `id` = ? AND `uid` = ?";
-
-    db.query(q, [postId, userInfo.id], (err, data) => {
-      if (err) return res.status(403).json("You can delete only your post!");
-
+const deletePost = async (req, res) => {
+    const token = req.cookies.access_token;
+    if (!token) return res.status(401).json("Not authenticated!");
+  
+    try {
+      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
+      const postId = req.params.id;
+  
+      const post = await Post.findOneAndDelete({ _id: postId, userId: userInfo.id });
+      if (!post) {
+        return res.status(403).json("You can delete only your post!");
+      }
+  
       return res.json("Post has been deleted!");
-    });
-  });
-};
+    } catch (err) {
+      if (err.name === "JsonWebTokenError") {
+        return res.status(403).json("Token is not valid!");
+      }
+      return res.status(500).json(err);
+    }
+  };
 
-export const updatePost = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
-
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
-
-    const postId = req.params.id;
-    const q =
-      "UPDATE posts SET `title`=?,`desc`=?,`img`=?,`cat`=? WHERE `id` = ? AND `uid` = ?";
-
-    const values = [req.body.title, req.body.desc, req.body.img, req.body.cat];
-
-    db.query(q, [...values, postId, userInfo.id], (err, data) => {
-      if (err) return res.status(500).json(err);
+const updatePost = async (req, res) => {
+    const token = req.cookies.access_token;
+    if (!token) return res.status(401).json("Not authenticated!");
+  
+    try {
+      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
+      const postId = req.params.id;
+  
+      // Update the post if the user is the owner
+      const updatedPost = await Post.findOneAndUpdate(
+        { _id: postId, userId: userInfo.id }, // Ensure the user owns the post
+        {
+          title: req.body.title,
+          desc: req.body.desc,
+          img: req.body.img,
+          cat: req.body.cat
+        },
+        { new: true } // Returns the updated document
+      );
+  
+      if (!updatedPost) {
+        return res.status(403).json("You can update only your post!");
+      }
+  
       return res.json("Post has been updated.");
-    });
-  });
-};
+    } catch (err) {
+      if (err.name === "JsonWebTokenError") {
+        return res.status(403).json("Token is not valid!");
+      }
+      return res.status(500).json(err);
+    }
+  };
+
+  module.exports = { getPosts, getPost,addPost,deletePost,updatePost };

@@ -1,13 +1,17 @@
-import express from "express";
-import authRoutes from "./routes/auth.js";
-import userRoutes from "./routes/users.js";
-import postRoutes from "./routes/posts.js";
-import cookieParser from "cookie-parser";
-import multer from "multer";
+
+const express = require('express');
+const authRoutes = require( "./routes/auth.js");
+const userRoutes = require( "./routes/users.js");
+const postRoutes = require( "./routes/posts.js");
+const cookieParser = require("cookie-parser");
+const multer = require( "multer");
+const bcrypt = require('bcryptjs');
+
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); 
+app.use("/api/auth", authRoutes);
 app.use(cookieParser());
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -29,6 +33,12 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
-app.listen(8800, () => {
-  console.log("Connected!");
-});
+
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb+srv://sriramtoram:HelloWorld1234@cluster0.nh99h3u.mongodb.net/')
+  .then(() => console.log('Connected to MongoDB...'))
+  .catch(err => console.error('Could not connect to MongoDB...', err));
+
+const port = process.env.PORT || 8001;
+app.listen(port, () => console.log(`Listening on port ${port}...`));
