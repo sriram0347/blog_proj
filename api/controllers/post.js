@@ -85,7 +85,7 @@ const addPost = async (req, res) => {
       const newPost = new Post({
         title: req.body.title,
         desc: req.body.desc,
-        
+        img : req.bdy.img,
         cat: req.body.cat,
         date: req.body.date,
         user_id: userInfo.id, // Assuming the decoded token contains the user ID

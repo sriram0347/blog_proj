@@ -1,5 +1,7 @@
 const User = require('../models/User'); // Import your User model
 const jwt= require("jsonwebtoken");
+
+
 const UserController = {
   // Get User Profile
   async getUserProfile(req, res) {

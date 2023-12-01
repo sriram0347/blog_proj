@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Write from "./pages/Write";
 import Home from "./pages/Home";
 import Single from "./pages/Single";
+import Update from "./pages/Update";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "./style.scss"
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/update",
+    element: <Update />,
   },
 ]);
 

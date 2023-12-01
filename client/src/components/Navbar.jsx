@@ -34,11 +34,24 @@ const Navbar = () => {
             <h6>FOOD</h6>
           </Link>
           <span>{currentUser?.username}</span>
-          {currentUser ? (
+          {/* {currentUser ? (
             <span onClick={logout}>Logout</span>
           ) : (
             <Link className="link" to="/login">
               Login
+            </Link>
+          )} */}
+          {currentUser && (
+            <>
+              <Link className="link" to="/update">
+                <span>Update Profile</span>
+              </Link>
+              <span onClick={logout}>Logout</span>
+            </>
+          )}
+          {!currentUser && (
+            <Link className="link" to="/login">
+              <span>Login</span>
             </Link>
           )}
           <span className="write">
@@ -53,3 +66,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
