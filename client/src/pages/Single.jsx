@@ -18,7 +18,7 @@ const Single = () => {
   const postId = location.pathname.split("/")[2];
 
   const { currentUser } = useContext(AuthContext);
-
+  console.log(postId);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,6 +31,7 @@ const Single = () => {
     fetchData();
   }, [postId]);
 
+  
   const handleDelete = async ()=>{
     try {
       await axios.delete(`/posts/${postId}`);

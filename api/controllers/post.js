@@ -27,7 +27,7 @@ const getPostsByUser = async (req, res) => {
     }
 
     // Find posts by user ID
-    const posts = await Post.find({ user_id: userId });
+    const posts = await Post.find({ user_id: user_id });
 
     res.status(200).json(posts);
   } catch (err) {
@@ -38,31 +38,36 @@ const getPostsByUser = async (req, res) => {
 const getPost = async (req, res) => {
   try {
     const postId = req.params.id;
+    console.log(postId)
 
-    const post = await Post.aggregate([
-      { $match: { _id: postId } },
-      {
-        $lookup: {
-          from: User.collection.name,
-          localField: 'userId', // Field in the Post model
-          foreignField: '_id', // Field in the User model
-          as: 'user'
-        }
-      },
-      { $unwind: '$user' },
-      {
-        $project: {
-          id: '$_id',
-          username: '$user.username',
-          title: 1,
-          desc: 1,
-          img: 1,
-          userImg: '$user.img',
-          cat: 1,
-          date: 1
-        }
-      }
-    ]);
+    // const post = await Post.aggregate([
+    //   { $match: { _id: postId } },
+    //   {
+    //     $lookup: {
+    //       from: User.collection.name,
+    //       localField: 'user_id', // Field in the Post model
+    //       foreignField: '_id', // Field in the User model
+    //       as: 'user'
+    //     }
+    //   },
+    //   { $unwind: '$user' },
+    //   {
+    //     $project: {
+    //       id: '$_id',
+    //       username: '$user.username',
+    //       title: 1,
+    //       desc: 1,
+    //       img: 1,
+    //       userImg: '$user.img',
+    //       cat: 1,
+    //       date: 1
+    //     }
+    //   }
+    // ]);
+
+    const post = await Post.find({ _id: postId }).populate('user_id', 'username email').exec();
+
+    console.log(post)
 
     if (!post) {
       return res.status(404).json('Post not found');
@@ -85,7 +90,7 @@ const addPost = async (req, res) => {
       const newPost = new Post({
         title: req.body.title,
         desc: req.body.desc,
-        img : req.bdy.img,
+        img : req.body.img,
         cat: req.body.cat,
         date: req.body.date,
         user_id: userInfo.id, // Assuming the decoded token contains the user ID
