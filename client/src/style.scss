@@ -1,4 +1,4 @@
-$lightGreen: #b9e7e7;
+$color: #dde7b9;
 
 .app {
   display: flex;
@@ -18,7 +18,7 @@ $lightGreen: #b9e7e7;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      background-color: $lightGreen;
+      background-color: $color;
 
       h1 {
         font-size: 20px;
@@ -90,7 +90,7 @@ $lightGreen: #b9e7e7;
         }
 
           .write {
-            background-color: $lightGreen;
+            background-color: $color;
             width: 50px;
             height: 50px;
             border-radius: 50%;
@@ -115,7 +115,7 @@ $lightGreen: #b9e7e7;
     footer {
       margin-top: 100px;
       padding: 20px;
-      background-color: $lightGreen;
+      background-color: $color;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -150,7 +150,7 @@ $lightGreen: #b9e7e7;
               content: "";
               width: 100%;
               height: 100%;
-              background-color: $lightGreen;
+              background-color: $color;
               position: absolute;
               top: 20px;
               left: -20px;
@@ -189,7 +189,7 @@ $lightGreen: #b9e7e7;
 
               &:hover {
                 border: 1px solid white;
-                background-color: $lightGreen;
+                background-color: $color;
                 color: black;
               }
             }
@@ -291,7 +291,7 @@ $lightGreen: #b9e7e7;
 
             &:hover {
               border: 1px solid white;
-              background-color: $lightGreen;
+              background-color: $color;
               color: black;
             }
           }

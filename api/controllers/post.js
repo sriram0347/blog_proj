@@ -112,7 +112,7 @@ const deletePost = async (req, res) => {
     if (!token) return res.status(401).json("Not authenticated!");
   
     try {
-      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
+      const userInfo = jwt.verify(token, "asGafgdaf12d"); // Replace "jwtkey" with your actual JWT secret
       const postId = req.params.id;
   
       const post = await Post.findOneAndDelete({ _id: postId, userId: userInfo.id });
@@ -134,7 +134,7 @@ const updatePost = async (req, res) => {
     if (!token) return res.status(401).json("Not authenticated!");
   
     try {
-      const userInfo = jwt.verify(token, "jwtkey"); // Replace "jwtkey" with your actual JWT secret
+      const userInfo = jwt.verify(token, "asGafgdaf12d"); // Replace "jwtkey" with your actual JWT secret
       const postId = req.params.id;
   
       // Update the post if the user is the owner
