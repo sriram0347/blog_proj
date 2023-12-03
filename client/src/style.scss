@@ -67,17 +67,21 @@ $color: #dde7b9;
       .container {
         padding: 10px 0px;
         display: flex;
-        align-items: center;
-        justify-content: space-between;
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center items horizontally */
+        justify-content: center; /* Center items vertically */
+
         .logo {
           img {
-            width: 120px;
+            width: 200px;
           }
         }
+
         .links {
           display: flex;
           align-items: center;
           gap: 10px;
+          margin-top: 10px; /* Add space between logo and links */
 
           h6 {
             font-size: 16px;
@@ -87,7 +91,6 @@ $color: #dde7b9;
           span {
             cursor: pointer;
           }
-        }
 
           .write {
             background-color: $color;
@@ -99,15 +102,41 @@ $color: #dde7b9;
             justify-content: center;
             font-weight: 300;
             border: 1px solid white;
-
+            // position: absolute; // Position absolute for top right corner
+            //         top: 10px; // Adjust top and right values to position it as needed
+            //         right: 10px;
+            
+        
             &:hover {
               color: teal;
               background-color: white;
               border: 1px solid teal;
             }
           }
+        }     
+          
+          .link1 {
+            display: flex;
+            padding: 10px 0px;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px; /* Add space between logo and links */
+            position: absolute; // Position absolute for top right corner
+            top: 10px; // Adjust top and right values to position it as needed
+            right: 10px;
+
+
+            h6 {
+              font-size: 16px;
+              font-weight: 300;
+            }
+  
+            span {
+              cursor: pointer;
+            }
+           }
         }
-      }
+}
   
 
     //FOOTER
