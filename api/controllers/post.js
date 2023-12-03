@@ -65,7 +65,7 @@ const getPost = async (req, res) => {
     //   }
     // ]);
 
-    const post = await Post.find({ _id: postId }).populate('user_id', 'username email').exec();
+    const post = await Post.find({ _id: postId }).populate('user_id', 'username').exec();
 
     console.log(post)
 
@@ -113,6 +113,7 @@ const deletePost = async (req, res) => {
   
     try {
       const userInfo = jwt.verify(token, "asGafgdaf12d"); // Replace "jwtkey" with your actual JWT secret
+      console.log(token);
       const postId = req.params.id;
   
       const post = await Post.findOneAndDelete({ _id: postId, userId: userInfo.id });
