@@ -6,12 +6,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const Write = () => {
+  
   const state = useLocation().state;
-  const [value, setValue] = useState(state?.title || "");
-  const [title, setTitle] = useState(state?.desc || "");
+  const [title, setTitle] = useState(state?.title || "");
+  const [desc, setDesc] = useState(state?.desc || "");
   const [file, setFile] = useState(null);
   const [cat, setCat] = useState(state?.cat || "");
-
+  console.log("TEST 02",state);
   const navigate = useNavigate()
 
   const upload = async () => {
@@ -31,15 +32,15 @@ const Write = () => {
 
     try {
       state
-        ? await axios.put(`/posts/${state.id}`, {
+        ? await axios.put(`/posts/${state._id}`, {
             title,
-            desc: value,
+            desc: desc,
             cat,
             img: file ? imgUrl : "",
           })
         : await axios.post(`/posts/`, {
             title,
-            desc: value,
+            desc: desc,
             cat,
             img: file ? imgUrl : "",
             date: moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
@@ -55,15 +56,16 @@ const Write = () => {
       <div className="content">
         <input
           type="text"
-          placeholder="Title"
+          placeholder="title"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <div className="editorContainer">
           <ReactQuill
             className="editor"
             theme="snow"
-            value={value}
-            onChange={setValue}
+            value={desc}
+            onChange={setDesc}
           />
         </div>
       </div>
