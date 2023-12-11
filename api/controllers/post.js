@@ -1,5 +1,5 @@
 const Post = require( '../models/posts'); // Import Post model
-const User = require( '../models/User'); // Import User model
+const User = require( '../models/user'); // Import User model
 const jwt= require("jsonwebtoken");
 
 const getPosts = async (req, res) => {
