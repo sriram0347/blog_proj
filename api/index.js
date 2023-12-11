@@ -37,9 +37,13 @@ app.use("/api/posts", postRoutes);
 
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://sriramtoram:HelloWorld1234@cluster0.nh99h3u.mongodb.net/')
+mongoose.connect(process.env.MONGODB_URI ||'mongodb+srv://sriramtoram:HelloWorld1234@cluster0.nh99h3u.mongodb.net/')
   .then(() => console.log('Connected to MongoDB...'))
   .catch(err => console.error('Could not connect to MongoDB...', err));
 
 const port = process.env.PORT || 8003;
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static('client/build'));
+
+}
 app.listen(port, () => console.log(`Listening on port ${port}...`));
